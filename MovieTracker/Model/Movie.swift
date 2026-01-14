@@ -7,7 +7,10 @@
 
 
 struct Response: Codable {
+    var page: Int
     var results: [Movie]
+    var totalPages: Int
+    var totalResults: Int
 }
 
 struct Movie: Codable, Hashable, Identifiable {
