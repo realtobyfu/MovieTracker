@@ -13,35 +13,23 @@ enum Mode: Equatable {
 }
 
 struct MovieListView: View {
-    
-    private var service = MovieService()
-    
-    @State private var mode: Mode = .discover
-    @State private var searchText: String = ""
-    
-    @State private var isLoading: Bool = false
-    @State private var movies = [Movie]()
-    @State private var errorMessage: String?
-    @State private var currentPage: Int = 1
-    @State private var totalPages: Int?
-    
-    @State private var loadedIDs = Set<Int>()
+    @State var vm = MovieListViewModel()
     
     var body: some View {
         NavigationStack {
-            if isLoading {
+            if vm.isLoading {
                 ProgressView()
             } else {
                 List {
-                    ForEach(movies) { movie in
+                    ForEach(vm.movies) { movie in
                         NavigationLink(movie.title, value: movie)
                     }
                     
-                    if currentPage < (totalPages ?? 0) {
+                    if vm.currentPage < (vm.totalPages ?? 0) {
                         ProgressView()
                         .task {
-                            currentPage += 1
-                            try? await loadPage(mode: mode, page: currentPage)
+                            vm.currentPage += 1
+                            try? await vm.loadPage()
                         }
                     }
                 }
@@ -51,38 +39,48 @@ struct MovieListView: View {
             }
         }
         .navigationTitle("Movies")
-        .searchable(text: $searchText, prompt: "Search Movies")
-        .task(id: searchText) {
-            if !searchText.isEmpty {
-                mode = .search(searchText: searchText)
+        .searchable(text: $vm.searchText, prompt: "Search Movies")
+        .task(id: vm.searchText) {
+            if !vm.searchText.isEmpty {
+                vm.mode = .search(searchText: vm.searchText)
             } else {
-                mode = .discover
+                vm.mode = .discover
             }
 
             print(".task(id: mode) is triggered")
-            isLoading = true
-            defer { isLoading = false }
+            vm.isLoading = true
+            defer { vm.isLoading = false }
             do {
-//                if currentPage == 1 {
-                try await resetAndLoad(mode: mode)
+                try await vm.resetAndLoad()
                     
             } catch {
-                errorMessage = error.localizedDescription
-                movies = []
+                vm.errorMessage = error.localizedDescription
+                vm.movies = []
             }
         }
     }
+}
+
+@MainActor @Observable
+final class MovieListViewModel {
+    private(set) var service = MovieService()
+    var mode: Mode = .discover
+    var searchText: String = ""
+    var isLoading: Bool = false
+    var movies = [Movie]()
+    var errorMessage: String?
+    var currentPage: Int = 1
+    var totalPages: Int?
+    private(set) var loadedIDs = Set<Int>()
     
-    func loadPage(mode: Mode, page: Int) async throws {
-        let response = try? await service.performRequest(mode: mode, page: page)
+    func loadPage() async throws {
+        let response = try? await service.performRequest(mode: mode, page: currentPage)
         let newMovies: [Movie] = (response?.results.filter{ loadedIDs.insert($0.id).inserted }) ?? []
         movies.append(contentsOf: newMovies)
         totalPages = response?.totalPages
     }
     
-    
-    
-    func resetAndLoad(mode: Mode) async throws {
+    func resetAndLoad() async throws {
         currentPage = 1
         loadedIDs.removeAll()
         movies.removeAll()
