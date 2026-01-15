@@ -7,14 +7,8 @@
 
 import SwiftUI
 
-enum Mode: Equatable {
-    case discover
-    case search(searchText: String)
-}
-
 struct MovieListView: View {
     @State var vm = MovieListViewModel()
-    
     var body: some View {
         NavigationStack {
             if vm.isLoading {
@@ -28,8 +22,7 @@ struct MovieListView: View {
                     if vm.currentPage < (vm.totalPages ?? 0) {
                         ProgressView()
                         .task {
-                            vm.currentPage += 1
-                            try? await vm.loadPage()
+                            await vm.loadPage()
                         }
                     }
                 }
@@ -41,59 +34,72 @@ struct MovieListView: View {
         .navigationTitle("Movies")
         .searchable(text: $vm.searchText, prompt: "Search Movies")
         .task(id: vm.searchText) {
-            if !vm.searchText.isEmpty {
-                vm.mode = .search(searchText: vm.searchText)
-            } else {
-                vm.mode = .discover
+            await vm.search()
+        }
+        .alert("Error", isPresented: $vm.showError) {
+            Button("OK") {
+                vm.errorMessage = nil
+                vm.isLoading = false
             }
-
-            print(".task(id: mode) is triggered")
-            vm.isLoading = true
-            defer { vm.isLoading = false }
-            do {
-                try await vm.resetAndLoad()
-                    
-            } catch {
-                vm.errorMessage = error.localizedDescription
-                vm.movies = []
-            }
+        } message: {
+            Text(vm.errorMessage ?? "")
         }
     }
 }
 
 @MainActor @Observable
 final class MovieListViewModel {
-    private(set) var service = MovieService()
+    nonisolated private let service: MovieServiceProtocol
     var mode: Mode = .discover
     var searchText: String = ""
     var isLoading: Bool = false
+    var showError: Bool = false
     var movies = [Movie]()
     var errorMessage: String?
     var currentPage: Int = 1
     var totalPages: Int?
     private(set) var loadedIDs = Set<Int>()
     
-    func loadPage() async throws {
-        let response = try? await service.performRequest(mode: mode, page: currentPage)
-        let newMovies: [Movie] = (response?.results.filter{ loadedIDs.insert($0.id).inserted }) ?? []
-        movies.append(contentsOf: newMovies)
-        totalPages = response?.totalPages
+    nonisolated init(service: MovieServiceProtocol = MovieService()) {
+        self.service = service
     }
     
-    func resetAndLoad() async throws {
+    func loadPage() async {
+        currentPage += 1
+        await fetchAndAppend()
+    }
+
+    func resetAndLoad() async {
         currentPage = 1
         loadedIDs.removeAll()
         movies.removeAll()
-        let response = try? await service.performRequest(mode: mode, page: currentPage)
-        let newMovies: [Movie] = (response?.results.filter{ loadedIDs.insert($0.id).inserted }) ?? []
-        movies.append(contentsOf: newMovies)
-        totalPages = response?.totalPages
+        await fetchAndAppend()
     }
 
+    private func fetchAndAppend() async {
+        do {
+            let response = try await service.performRequest(mode: mode, page: currentPage)
+            let newMovies = response.results.filter { loadedIDs.insert($0.id).inserted }
+            movies.append(contentsOf: newMovies)
+            totalPages = response.totalPages
+        } catch {
+            errorMessage = error.localizedDescription
+        }
+    }
+    
+    
+    
+    func search() async {
+        if !searchText.isEmpty {
+            mode = .search(searchText: searchText)
+        } else {
+            mode = .discover
+        }
+        isLoading = true
+        await resetAndLoad()
+        isLoading = false
+    }
 }
-
-
-
 
 #Preview {
     MovieListView()

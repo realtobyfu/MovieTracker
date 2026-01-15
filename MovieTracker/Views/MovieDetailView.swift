@@ -43,14 +43,7 @@ struct MovieDetailView: View {
         }
         .padding(.horizontal, 20)
         .padding(.vertical, 30)
-//        .task {
-//            image = await loadImage()
-//        }
-    }
-    
-//    func loadImage() async -> AsyncImage<Image> {
-//        return AsyncImage(url: URL(string: "https://image.tmdb.org/t/p/w500" + movie.posterPath))
-//    }
+    }    
 }
 
 #Preview {

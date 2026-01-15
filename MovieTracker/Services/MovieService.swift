@@ -7,7 +7,12 @@
 
 import Foundation
 
-struct MovieService {
+
+protocol MovieServiceProtocol {
+    func performRequest(mode: Mode, page: Int) async throws -> Response
+}
+
+struct MovieService: MovieServiceProtocol {
     func performRequest(mode: Mode, page: Int) async throws -> Response {
         var comps: URLComponents?
         switch mode {

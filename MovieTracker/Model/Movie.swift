@@ -13,6 +13,11 @@ struct Response: Codable {
     var totalResults: Int
 }
 
+enum Mode: Equatable {
+    case discover
+    case search(searchText: String)
+}
+
 struct Movie: Codable, Hashable, Identifiable {
     let id: Int
     let originalTitle : String
