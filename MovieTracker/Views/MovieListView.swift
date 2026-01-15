@@ -84,6 +84,7 @@ final class MovieListViewModel {
             totalPages = response.totalPages
         } catch {
             errorMessage = error.localizedDescription
+            showError = true
         }
     }
     
