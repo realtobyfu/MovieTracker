@@ -10,7 +10,7 @@ import Foundation
 @MainActor @Observable
 final class MovieListViewModel {
     nonisolated private let service: MovieServiceProtocol
-    var mode: Mode = .discover
+//    var mode: Mode = .discover
     var searchText: String = ""
     var isLoading: Bool = false
     var showError: Bool = false
@@ -19,6 +19,12 @@ final class MovieListViewModel {
     var currentPage: Int = 1
     var totalPages: Int?
     private(set) var loadedIDs = Set<Int>()
+    
+    // computed property to decide which point to use
+    // in the service layer call
+    private var endpoint: Endpoint {
+        searchText.isEmpty ? .discover : .search(query: searchText)
+    }
     
     nonisolated init(service: MovieServiceProtocol = MovieService()) {
         self.service = service
@@ -38,7 +44,7 @@ final class MovieListViewModel {
 
     private func fetchAndAppend() async {
         do {
-            let response = try await service.performRequest(mode: mode, page: currentPage)
+            let response = try await service.fetchMovies(endpoint: endpoint, page: currentPage)
             let newMovies = response.results.filter { loadedIDs.insert($0.id).inserted }
             movies.append(contentsOf: newMovies)
             totalPages = response.totalPages
@@ -51,11 +57,6 @@ final class MovieListViewModel {
     
     
     func search() async {
-        if !searchText.isEmpty {
-            mode = .search(searchText: searchText)
-        } else {
-            mode = .discover
-        }
         isLoading = true
         await resetAndLoad()
         isLoading = false

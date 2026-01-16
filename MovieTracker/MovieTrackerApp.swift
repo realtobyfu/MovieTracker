@@ -12,7 +12,7 @@ import SwiftData
 struct MovieTrackerApp: App {
     var body: some Scene {
         WindowGroup {
-            MovieListView()
+            ContentView()
         }
     }
 }

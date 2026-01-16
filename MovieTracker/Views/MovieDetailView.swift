@@ -8,6 +8,8 @@
 import SwiftUI
 
 struct MovieDetailView: View {
+    
+    @State var isFavorite: Bool = false
     let movie: Movie
     
     var body: some View {
