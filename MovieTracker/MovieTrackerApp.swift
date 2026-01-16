@@ -10,9 +10,11 @@ import SwiftData
 
 @main
 struct MovieTrackerApp: App {
+    @State private var favoritesStore = FavoritesStore()
     var body: some Scene {
         WindowGroup {
             ContentView()
+                .environment(favoritesStore)
         }
     }
 }

@@ -6,9 +6,11 @@
 //
 
 import Foundation
+import SwiftUI
 
 @MainActor @Observable
 final class MovieListViewModel {
+    
     nonisolated private let service: MovieServiceProtocol
 //    var mode: Mode = .discover
     var searchText: String = ""
@@ -19,15 +21,22 @@ final class MovieListViewModel {
     var currentPage: Int = 1
     var totalPages: Int?
     private(set) var loadedIDs = Set<Int>()
+    nonisolated private let favoriteVM: Bool
     
     // computed property to decide which point to use
     // in the service layer call
     private var endpoint: Endpoint {
-        searchText.isEmpty ? .discover : .search(query: searchText)
+        if favoriteVM {
+            .favorites
+        } else {
+            searchText.isEmpty ? .discover : .search(query: searchText)
+        }
     }
     
-    nonisolated init(service: MovieServiceProtocol = MovieService()) {
+    nonisolated init(service: MovieServiceProtocol = MovieService(), favoriteVM: Bool = false) {
         self.service = service
+        self.favoriteVM = favoriteVM
+
     }
     
     func loadPage() async {
@@ -35,11 +44,18 @@ final class MovieListViewModel {
         await fetchAndAppend()
     }
 
-    func resetAndLoad() async {
+    func resetAndLoad(store: FavoritesStore? = nil) async {
+//        if endpoint == .favorites {
+//            
+//        }
         currentPage = 1
         loadedIDs.removeAll()
         movies.removeAll()
         await fetchAndAppend()
+        if (store != nil) {
+            store?.isLoaded = false
+            await store?.loadFavorites()
+        }
     }
 
     private func fetchAndAppend() async {
@@ -53,8 +69,6 @@ final class MovieListViewModel {
             showError = true
         }
     }
-    
-    
     
     func search() async {
         isLoading = true

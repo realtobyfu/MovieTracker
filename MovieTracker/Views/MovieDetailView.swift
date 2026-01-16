@@ -8,9 +8,9 @@
 import SwiftUI
 
 struct MovieDetailView: View {
-    
-    @State var isFavorite: Bool = false
+    @Environment(FavoritesStore.self) var favoritesStore
     let movie: Movie
+    var isFavorite: Bool { favoritesStore.isFavorite(id: movie.id) }
     
     var body: some View {
         VStack(spacing: 10) {
@@ -45,7 +45,19 @@ struct MovieDetailView: View {
         }
         .padding(.horizontal, 20)
         .padding(.vertical, 30)
-    }    
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                Button {
+                    Task {
+                        try? await favoritesStore.toggleFavorite(movieId: movie.id)
+                    }
+                } label: {
+                        Image(systemName: isFavorite ? "heart.fill":"heart")
+                            .foregroundStyle(isFavorite ? .red : .gray)
+                }
+            }
+        }
+    }
 }
 
 #Preview {

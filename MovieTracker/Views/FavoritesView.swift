@@ -8,8 +8,41 @@
 import SwiftUI
 
 struct FavoritesView: View {
+    @State var vm = MovieListViewModel(favoriteVM: true)
+    
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        NavigationStack {
+            if vm.isLoading {
+                ProgressView()
+            } else {
+                List {
+                    ForEach(vm.movies) { movie in
+                        NavigationLink(movie.title, value: movie)
+                    }
+                    if vm.currentPage < (vm.totalPages ?? 0) {
+                        ProgressView()
+                        .task {
+                            await vm.loadPage()
+                        }
+                    }
+                }
+                .navigationDestination(for: Movie.self) { movie in
+                    MovieDetailView(movie: movie)
+                }
+            }
+        }
+        .task {
+            await vm.resetAndLoad()
+        }
+        .navigationTitle("Favorties")
+        .alert("Error", isPresented: $vm.showError) {
+            Button("OK") {
+                vm.errorMessage = nil
+                vm.isLoading = false
+            }
+        } message: {
+            Text(vm.errorMessage ?? "")
+        }
     }
 }
 
