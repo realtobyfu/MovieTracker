@@ -8,44 +8,41 @@
 import SwiftUI
 
 struct FavoritesView: View {
-    @State var vm = MovieListViewModel(favoriteVM: true)
-    
+    @Environment(FavoritesStore.self) var store
+
     var body: some View {
         NavigationStack {
-            if vm.isLoading {
+            if store.isLoading && store.favoriteMovies.isEmpty {
                 ProgressView()
             } else {
                 List {
-                    ForEach(vm.movies) { movie in
+                    ForEach(store.favoriteMovies) { movie in
                         NavigationLink(movie.title, value: movie)
                     }
-                    if vm.currentPage < (vm.totalPages ?? 0) {
+                    // Pagination: load more when reaching end
+                    if store.currentPage < (store.totalPages ?? 1) {
                         ProgressView()
-                        .task {
-                            await vm.loadPage()
-                        }
+                            .task {
+                                await store.loadNextPage()
+                            }
                     }
                 }
                 .navigationDestination(for: Movie.self) { movie in
                     MovieDetailView(movie: movie)
                 }
+                .refreshable {
+                    await store.refresh()
+                }
             }
         }
+        .navigationTitle("Favorites")
         .task {
-            await vm.resetAndLoad()
-        }
-        .navigationTitle("Favorties")
-        .alert("Error", isPresented: $vm.showError) {
-            Button("OK") {
-                vm.errorMessage = nil
-                vm.isLoading = false
-            }
-        } message: {
-            Text(vm.errorMessage ?? "")
+            await store.loadFavorites()
         }
     }
 }
 
 #Preview {
     FavoritesView()
+        .environment(FavoritesStore())
 }

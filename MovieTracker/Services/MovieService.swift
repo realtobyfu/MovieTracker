@@ -81,8 +81,8 @@ struct MovieService: MovieServiceProtocol {
     func fetchFavorites(page: Int) async throws -> Response {
         var queryItems = Endpoint.favorites.baseQueryItems
         queryItems.append(URLQueryItem(name: "page", value: String(page)))
-        
-        let request = try buildRequest(endpoint: .favorites)
+
+        let request = try buildRequest(endpoint: .favorites, queryItems: queryItems)
         let (data, _) = try await URLSession.shared.data(for: request)
         return try decoder.decode(Response.self, from: data)
     }

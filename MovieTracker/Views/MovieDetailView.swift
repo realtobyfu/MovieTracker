@@ -10,7 +10,7 @@ import SwiftUI
 struct MovieDetailView: View {
     @Environment(FavoritesStore.self) var favoritesStore
     let movie: Movie
-    var isFavorite: Bool { favoritesStore.isFavorite(id: movie.id) }
+    var isFavorite: Bool { favoritesStore.isFavorite(movie.id) }
     
     var body: some View {
         VStack(spacing: 10) {
@@ -49,7 +49,7 @@ struct MovieDetailView: View {
             ToolbarItem(placement: .topBarTrailing) {
                 Button {
                     Task {
-                        try? await favoritesStore.toggleFavorite(movieId: movie.id)
+                        try? await favoritesStore.toggleFavorite(movie: movie)
                     }
                 } label: {
                         Image(systemName: isFavorite ? "heart.fill":"heart")

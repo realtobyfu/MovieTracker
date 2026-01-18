@@ -21,22 +21,14 @@ final class MovieListViewModel {
     var currentPage: Int = 1
     var totalPages: Int?
     private(set) var loadedIDs = Set<Int>()
-    nonisolated private let favoriteVM: Bool
-    
-    // computed property to decide which point to use
-    // in the service layer call
-    private var endpoint: Endpoint {
-        if favoriteVM {
-            .favorites
-        } else {
-            searchText.isEmpty ? .discover : .search(query: searchText)
-        }
-    }
-    
-    nonisolated init(service: MovieServiceProtocol = MovieService(), favoriteVM: Bool = false) {
-        self.service = service
-        self.favoriteVM = favoriteVM
 
+    // Computed endpoint based on searchText
+    private var endpoint: Endpoint {
+        searchText.isEmpty ? .discover : .search(query: searchText)
+    }
+
+    nonisolated init(service: MovieServiceProtocol = MovieService()) {
+        self.service = service
     }
     
     func loadPage() async {
@@ -44,18 +36,11 @@ final class MovieListViewModel {
         await fetchAndAppend()
     }
 
-    func resetAndLoad(store: FavoritesStore? = nil) async {
-//        if endpoint == .favorites {
-//            
-//        }
+    func resetAndLoad() async {
         currentPage = 1
         loadedIDs.removeAll()
         movies.removeAll()
         await fetchAndAppend()
-        if (store != nil) {
-            store?.isLoaded = false
-            await store?.loadFavorites()
-        }
     }
 
     private func fetchAndAppend() async {
