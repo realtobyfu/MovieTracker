@@ -31,4 +31,16 @@ struct Movie: Codable, Hashable, Identifiable {
 
 extension Movie {
     static var sample = Movie(id: 1242898, originalTitle: "Predator: Badlands", title: "Predator: Badlands", overview: "Cast out from his clan, a young Predator finds an unlikely ally in a damaged android and embarks on a treacherous journey in search of the ultimate adversary.", posterPath: "/pHpq9yNUIo6aDoCXEBzjSolywgz.jpg", releaseDate: "2025-11-05", voteAverage: 7.758, durationInMinutes: 130)
+    
+    static var sample2 = Movie(
+        id: 999,
+        originalTitle: "Test Movie 2",
+        title: "Test Movie 2",
+        overview: "A test movie",
+        posterPath: nil,
+        releaseDate: "2025-01-01",
+        voteAverage: 8.0,
+        durationInMinutes: 120
+    )
+
 }
