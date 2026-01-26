@@ -8,18 +8,25 @@
 import SwiftUI
 
 struct ContentView: View {
+    let favoritesStore: FavoritesStore
+    let movieListViewModel: MovieListViewModel
+
     var body: some View {
         TabView {
             Tab("Discover", systemImage: "magnifyingglass") {
-                MovieListView()
+                MovieListView(viewModel: movieListViewModel, favoritesStore: favoritesStore)
             }
             Tab("Favorites", systemImage: "star.fill") {
-                FavoritesView()
+                FavoritesView(store: favoritesStore)
             }
         }
     }
 }
 
 #Preview {
-    ContentView()
+    let service = MovieService()
+    ContentView(
+        favoritesStore: FavoritesStore(service: service),
+        movieListViewModel: MovieListViewModel(service: service)
+    )
 }

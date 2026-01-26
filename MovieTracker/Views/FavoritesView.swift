@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct FavoritesView: View {
-    @Environment(FavoritesStore.self) var store
+    let store: FavoritesStore
 
     var body: some View {
         NavigationStack {
@@ -28,7 +28,7 @@ struct FavoritesView: View {
                     }
                 }
                 .navigationDestination(for: Movie.self) { movie in
-                    MovieDetailView(movie: movie)
+                    MovieDetailView(movie: movie, favoritesStore: store)
                 }
                 .refreshable {
                     await store.refresh()
@@ -43,6 +43,5 @@ struct FavoritesView: View {
 }
 
 #Preview {
-    FavoritesView()
-        .environment(FavoritesStore())
+    FavoritesView(store: FavoritesStore(service: MovieService()))
 }

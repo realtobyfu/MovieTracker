@@ -6,6 +6,11 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		3EF0ACF92F20DC0D007C4E98 /* SafeDI in Frameworks */ = {isa = PBXBuildFile; productRef = 3EF0ACF82F20DC0D007C4E98 /* SafeDI */; };
+		3EF0ACFB2F20DC0D007C4E98 /* SafeDITool in Frameworks */ = {isa = PBXBuildFile; productRef = 3EF0ACFA2F20DC0D007C4E98 /* SafeDITool */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		3EF0AB6B2F1CEC9B007C4E98 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -39,6 +44,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3EF0ACFB2F20DC0D007C4E98 /* SafeDITool in Frameworks */,
+				3EF0ACF92F20DC0D007C4E98 /* SafeDI in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -84,12 +91,15 @@
 			buildRules = (
 			);
 			dependencies = (
+				3EF0ACFD2F20DC91007C4E98 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
 				3E22B9CE2F13A0F700BF32A1 /* MovieTracker */,
 			);
 			name = MovieTracker;
 			packageProductDependencies = (
+				3EF0ACF82F20DC0D007C4E98 /* SafeDI */,
+				3EF0ACFA2F20DC0D007C4E98 /* SafeDITool */,
 			);
 			productName = MovieTracker;
 			productReference = 3E22B9CC2F13A0F700BF32A1 /* MovieTracker.app */;
@@ -146,6 +156,9 @@
 			);
 			mainGroup = 3E22B9C32F13A0F700BF32A1;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				3EF0ACF72F20DC0D007C4E98 /* XCRemoteSwiftPackageReference "SafeDI" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 3E22B9CD2F13A0F700BF32A1 /* Products */;
 			projectDirPath = "";
@@ -196,6 +209,10 @@
 			isa = PBXTargetDependency;
 			target = 3E22B9CB2F13A0F700BF32A1 /* MovieTracker */;
 			targetProxy = 3EF0AB6B2F1CEC9B007C4E98 /* PBXContainerItemProxy */;
+		};
+		3EF0ACFD2F20DC91007C4E98 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			productRef = 3EF0ACFC2F20DC91007C4E98 /* SafeDIGenerator */;
 		};
 /* End PBXTargetDependency section */
 
@@ -468,6 +485,35 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		3EF0ACF72F20DC0D007C4E98 /* XCRemoteSwiftPackageReference "SafeDI" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/dfed/SafeDI.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.5.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		3EF0ACF82F20DC0D007C4E98 /* SafeDI */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 3EF0ACF72F20DC0D007C4E98 /* XCRemoteSwiftPackageReference "SafeDI" */;
+			productName = SafeDI;
+		};
+		3EF0ACFA2F20DC0D007C4E98 /* SafeDITool */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 3EF0ACF72F20DC0D007C4E98 /* XCRemoteSwiftPackageReference "SafeDI" */;
+			productName = SafeDITool;
+		};
+		3EF0ACFC2F20DC91007C4E98 /* SafeDIGenerator */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 3EF0ACF72F20DC0D007C4E98 /* XCRemoteSwiftPackageReference "SafeDI" */;
+			productName = "plugin:SafeDIGenerator";
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 3E22B9C42F13A0F700BF32A1 /* Project object */;
 }

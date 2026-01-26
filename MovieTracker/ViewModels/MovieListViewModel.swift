@@ -7,11 +7,12 @@
 
 import Foundation
 import SwiftUI
+import SafeDICore
 
 @MainActor @Observable
 final class MovieListViewModel {
     
-    nonisolated private let service: MovieServiceProtocol
+    @Received private let service: MovieServiceProtocol
 //    var mode: Mode = .discover
     var searchText: String = ""
     var isLoading: Bool = false
@@ -27,7 +28,7 @@ final class MovieListViewModel {
         searchText.isEmpty ? .discover : .search(query: searchText)
     }
 
-    nonisolated init(service: MovieServiceProtocol = MovieService()) {
+    public init(service: MovieServiceProtocol) {
         self.service = service
     }
     

@@ -1,0 +1,42 @@
+{
+  "originHash" : "c56a09421361d645b2ec8314240abaccfaf3f5a335f3ed1cc6776c851e76c053",
+  "pins" : [
+    {
+      "identity" : "safedi",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/dfed/SafeDI.git",
+      "state" : {
+        "revision" : "e109a22dcc0657f45b0ae3e7f5f256829d85c123",
+        "version" : "1.5.0"
+      }
+    },
+    {
+      "identity" : "swift-argument-parser",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/apple/swift-argument-parser.git",
+      "state" : {
+        "revision" : "c5d11a805e765f52ba34ec7284bd4fcd6ba68615",
+        "version" : "1.7.0"
+      }
+    },
+    {
+      "identity" : "swift-collections",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/apple/swift-collections.git",
+      "state" : {
+        "revision" : "7b847a3b7008b2dc2f47ca3110d8c782fb2e5c7e",
+        "version" : "1.3.0"
+      }
+    },
+    {
+      "identity" : "swift-syntax",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/swiftlang/swift-syntax.git",
+      "state" : {
+        "revision" : "4799286537280063c85a32f09884cfbca301b1a1",
+        "version" : "602.0.0"
+      }
+    }
+  ],
+  "version" : 3
+}

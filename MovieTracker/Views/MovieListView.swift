@@ -1,5 +1,5 @@
 //
-//  ContentView.swift
+//  MovieListView.swift
 //  MovieTracker
 //
 //  Created by Tobias Fu on 1/10/26.
@@ -8,44 +8,51 @@
 import SwiftUI
 
 struct MovieListView: View {
-    @State var vm = MovieListViewModel()
+    @Bindable var viewModel: MovieListViewModel
+    let favoritesStore: FavoritesStore
+
     var body: some View {
         NavigationStack {
-            if vm.isLoading {
+            if viewModel.isLoading {
                 ProgressView()
             } else {
                 List {
-                    ForEach(vm.movies) { movie in
+                    ForEach(viewModel.movies) { movie in
                         NavigationLink(movie.title, value: movie)
                     }
-                    
-                    if vm.currentPage < (vm.totalPages ?? 0) {
+
+                    if viewModel.currentPage < (viewModel.totalPages ?? 0) {
                         ProgressView()
-                        .task {
-                            await vm.loadPage()
-                        }
+                            .task {
+                                await viewModel.loadPage()
+                            }
                     }
                 }
                 .navigationDestination(for: Movie.self) { movie in
-                    MovieDetailView(movie: movie)
+                    MovieDetailView(movie: movie, favoritesStore: favoritesStore)
                 }
             }
         }
         .navigationTitle("Movies")
-        .searchable(text: $vm.searchText, prompt: "Search Movies")
-        .task(id: vm.searchText) {
-            await vm.search()
+        .searchable(text: $viewModel.searchText, prompt: "Search Movies")
+        .task(id: viewModel.searchText) {
+            await viewModel.search()
         }
-        .alert("Error", isPresented: $vm.showError) {
+        .alert("Error", isPresented: $viewModel.showError) {
             Button("OK") {
-                vm.errorMessage = nil
-                vm.isLoading = false
+                viewModel.errorMessage = nil
+                viewModel.isLoading = false
             }
         } message: {
-            Text(vm.errorMessage ?? "")
+            Text(viewModel.errorMessage ?? "")
         }
     }
 }
+
 #Preview {
-    MovieListView()
+    let service = MovieService()
+    MovieListView(
+        viewModel: MovieListViewModel(service: service),
+        favoritesStore: FavoritesStore(service: service)
+    )
 }

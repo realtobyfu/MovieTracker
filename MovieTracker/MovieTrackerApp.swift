@@ -7,14 +7,18 @@
 
 import SwiftUI
 import SwiftData
+import SafeDICore
 
 @main
 struct MovieTrackerApp: App {
-    @State private var favoritesStore = FavoritesStore()
+    let dependencies = AppDependencies()
+
     var body: some Scene {
         WindowGroup {
-            ContentView()
-                .environment(favoritesStore)
+            ContentView(
+                favoritesStore: dependencies.favoritesStore,
+                movieListViewModel: dependencies.movieListViewModel
+            )
         }
     }
 }

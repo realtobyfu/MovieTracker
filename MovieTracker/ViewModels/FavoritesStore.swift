@@ -6,11 +6,13 @@
 //
 
 import Foundation
+import SafeDICore
 
 /// Single source of truth for favorites - holds both IDs (for quick lookup) and movies (for display)
 @MainActor @Observable
+@Instantiable
 final class FavoritesStore {
-    nonisolated private let service: MovieServiceProtocol
+    @Received private let service: MovieServiceProtocol
 
     // Both are always kept in sync
     private(set) var favoriteIDs: Set<Int> = []
@@ -22,7 +24,7 @@ final class FavoritesStore {
     var isLoading = false
     var errorMessage: String?
 
-    nonisolated init(service: MovieServiceProtocol = MovieService()) {
+    public init(service: MovieServiceProtocol) {
         self.service = service
     }
 

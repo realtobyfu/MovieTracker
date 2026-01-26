@@ -47,7 +47,6 @@ struct FavoriteRequest: Encodable {
 }
 
 // MARK: - Protocol
-
 protocol MovieServiceProtocol {
     func fetchMovies(endpoint: Endpoint, page: Int) async throws -> Response
     func fetchFavorites(page: Int) async throws -> Response
@@ -55,12 +54,12 @@ protocol MovieServiceProtocol {
 }
 
 // MARK: - Service
-
+@Instantiable(fulfilledByType: "MovieServiceProtocol")
 struct MovieService: MovieServiceProtocol {
     
     private let decoder: JSONDecoder
     
-    init(decoder: JSONDecoder = JSONDecoder()) {
+    public init(decoder: JSONDecoder = JSONDecoder()) {
         let formatter = DateFormatter()
         formatter.dateFormat = "yyyy-MM-dd"
         decoder.dateDecodingStrategy = .formatted(formatter)

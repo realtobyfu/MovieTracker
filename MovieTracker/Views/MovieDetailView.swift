@@ -8,10 +8,11 @@
 import SwiftUI
 
 struct MovieDetailView: View {
-    @Environment(FavoritesStore.self) var favoritesStore
     let movie: Movie
+    let favoritesStore: FavoritesStore
+
     var isFavorite: Bool { favoritesStore.isFavorite(movie.id) }
-    
+
     var body: some View {
         VStack(spacing: 10) {
             if movie.posterPath != nil {
@@ -24,10 +25,9 @@ struct MovieDetailView: View {
                 .frame(width: 300)
             }
 
-            
             Text((movie.title))
                 .font(.title)
-            
+
             if movie.originalTitle != movie.title {
                 Text("Original Title: \(movie.originalTitle)")
                     .font(.subheadline)
@@ -38,7 +38,7 @@ struct MovieDetailView: View {
             if let score = movie.voteAverage {
                 Text("Average Score: \(score.description)")
             }
-            
+
             if let overview = movie.overview {
                 Text("Overview: \(overview)")
             }
@@ -52,8 +52,8 @@ struct MovieDetailView: View {
                         try? await favoritesStore.toggleFavorite(movie: movie)
                     }
                 } label: {
-                        Image(systemName: isFavorite ? "heart.fill":"heart")
-                            .foregroundStyle(isFavorite ? .red : .gray)
+                    Image(systemName: isFavorite ? "heart.fill" : "heart")
+                        .foregroundStyle(isFavorite ? .red : .gray)
                 }
             }
         }
@@ -61,5 +61,5 @@ struct MovieDetailView: View {
 }
 
 #Preview {
-    MovieDetailView(movie: .sample)
+    MovieDetailView(movie: .sample, favoritesStore: FavoritesStore(service: MovieService()))
 }
